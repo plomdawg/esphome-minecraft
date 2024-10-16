@@ -35,26 +35,19 @@ external_components:
       type: git
       ref: dev
     refresh: 0s
-    components: [minecraft_ore_block_config, minecraft_server_checker]
+    components: [minecraft_server_checker]
 
-# Configuration component
-minecraft_ore_block_config:
-  id: ore_block_config
 
 # Server checker component
 minecraft_server_checker:
   id: server_checker
-  config_id: ore_block_config
-  player_count_id: player_count
-  server_status_id: server_status
   update_interval: 15s
-
-# LED control component
-#minecraft_led_control:
-#  id: led_control
-#  config_id: ore_block_config
-#  light_id: ore_block_led
-#  player_count_sensor_id: player_count
+  server_address: !lambda return id(server_address).state
+  server_port: !lambda return id(server_port).state
+  player_count:
+    name: "Player Count"
+  server_status:
+    name: "Server Status"
 
 # Sensors
 sensor:

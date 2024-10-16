@@ -1,36 +1,49 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.const import CONF_ID
-from esphome.components import sensor, text_sensor, minecraft_ore_block_config
+from esphome.components import sensor, text_sensor
+from esphome.const import CONF_ID, CONF_UPDATE_INTERVAL, UNIT_EMPTY, ICON_ACCOUNT_GROUP, ICON_SERVER_NETWORK
 
-DEPENDENCIES = ["minecraft_ore_block_config"]
+DEPENDENCIES = ['network']
+AUTO_LOAD = ['sensor', 'text_sensor']
 
-minecraft_server_checker_ns = cg.esphome_ns.namespace('minecraft_server_checker')
-MinecraftServerChecker = minecraft_server_checker_ns.class_('MinecraftServerChecker', cg.PollingComponent)
+minecraft_ns = cg.esphome_ns.namespace('minecraft')
+MinecraftServerChecker = minecraft_ns.class_('MinecraftServerChecker', cg.Component)
 
-CONF_CONFIG_ID = "config_id"
-CONF_PLAYER_COUNT_ID = "player_count_id"
-CONF_SERVER_STATUS_ID = "server_status_id"
-CONF_MINECRAFT_SERVER_CHECKER_ID = "minecraft_server_checker_id"
+CONF_SERVER_ADDRESS = 'server_address'
+CONF_SERVER_PORT = 'server_port'
+CONF_PLAYER_COUNT = 'player_count'
+CONF_SERVER_STATUS = 'server_status'
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(MinecraftServerChecker),
-    cv.GenerateID(CONF_CONFIG_ID): cv.use_id(minecraft_ore_block_config.MinecraftOreBlockConfig),
-    cv.Optional(CONF_PLAYER_COUNT_ID): cv.use_id(sensor.Sensor),
-    cv.Optional(CONF_SERVER_STATUS_ID): cv.use_id(text_sensor.TextSensor),
-}).extend(cv.polling_component_schema('60s'))
+    cv.Optional(CONF_UPDATE_INTERVAL, default='60s'): cv.update_interval,
+    cv.Required(CONF_SERVER_ADDRESS): cv.string,
+    cv.Required(CONF_SERVER_PORT): cv.port,
+    cv.Optional(CONF_PLAYER_COUNT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_ACCOUNT_GROUP,
+        accuracy_decimals=0
+    ),
+    cv.Optional(CONF_SERVER_STATUS): text_sensor.text_sensor_schema(
+        icon=ICON_SERVER_NETWORK
+    ),
+}).extend(cv.COMPONENT_SCHEMA)
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    
-    config_var = yield cg.get_variable(config[CONF_CONFIG_ID])
-    cg.add(var.set_config(config_var))
-    
-    if CONF_PLAYER_COUNT_ID in config:
-        sens = yield cg.get_variable(config[CONF_PLAYER_COUNT_ID])
+    await cg.register_component(var, config)
+
+    cg.add(var.set_update_interval(config[CONF_UPDATE_INTERVAL]))
+    cg.add(var.set_server_address(config[CONF_SERVER_ADDRESS]))
+    cg.add(var.set_server_port(config[CONF_SERVER_PORT]))
+
+    if CONF_PLAYER_COUNT in config:
+        sens = await sensor.new_sensor(config[CONF_PLAYER_COUNT])
         cg.add(var.set_player_count_sensor(sens))
-    
-    if CONF_SERVER_STATUS_ID in config:
-        sens = yield cg.get_variable(config[CONF_SERVER_STATUS_ID])
+
+    if CONF_SERVER_STATUS in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_SERVER_STATUS])
         cg.add(var.set_server_status_sensor(sens))
+
+    # Add library dependencies
+    cg.add_library("ArduinoJson", "6.19.4")

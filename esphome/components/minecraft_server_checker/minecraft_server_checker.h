@@ -1,72 +1,42 @@
-#include "esphome.h"
+#pragma once
+
+#include "esphome/core/component.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 #include <WiFiClient.h>
 
-class MinecraftServerChecker : public PollingComponent {
+namespace esphome {
+namespace minecraft {
+
+class MinecraftServerChecker : public Component {
  public:
-  MinecraftServerChecker() : PollingComponent(15000) {}  // Poll every 15 seconds
+  void set_update_interval(uint32_t update_interval) { update_interval_ = update_interval; }
+  void set_server_address(const std::string &server_address) { server_address_ = server_address; }
+  void set_server_port(uint16_t server_port) { server_port_ = server_port; }
 
-  Sensor *player_count_sensor = new Sensor();
-  TextSensor *server_status_sensor = new TextSensor();
+  void set_player_count_sensor(sensor::Sensor *player_count_sensor) { player_count_sensor_ = player_count_sensor; }
+  void set_server_status_sensor(text_sensor::TextSensor *server_status_sensor) { server_status_sensor_ = server_status_sensor; }
 
-  void set_config(MinecraftOreBlockConfig *config) {
-    config_ = config;
-  }
+  void setup() override;
+  void loop() override;
+  void update();
 
-  void setup() override {
-    // This will be called by App.setup()
-  }
+  float get_setup_priority() const override { return setup_priority::AFTER_WIFI; }
 
-  void update() override {
-    // This will be called every 15 seconds
-    if (config_->get_mode() == "auto") {
-      check_server_status();
-    } else {
-      // In static mode, we don't need to check the server
-      server_status_sensor->publish_state("Static Mode");
-      player_count_sensor->publish_state(0);
-    }
-  }
+ protected:
+  uint32_t update_interval_;
+  std::string server_address_;
+  uint16_t server_port_;
+  uint32_t last_update_{0};
 
-  void set_player_count_sensor(sensor::Sensor *sens) { player_count_sensor = sens; }
-  //void set_server_status_sensor(text_sensor::TextSensor *sens) { server_status_sensor = sens; }
+  sensor::Sensor *player_count_sensor_{nullptr};
+  text_sensor::TextSensor *server_status_sensor_{nullptr};
 
- private:
-  MinecraftOreBlockConfig *config_;
+  WiFiClient client_;
 
-  void check_server_status() {
-    WiFiClient client;
-    if (!client.connect(config_->get_server_address().c_str(), config_->get_server_port())) {
-      ESP_LOGE("MinecraftServer", "Connection failed");
-      server_status_sensor->publish_state("Offline");
-      player_count_sensor->publish_state(0);
-      return;
-    }
-
-    // Send server list ping packet
-    uint8_t packet[] = {
-      0x00,  // Packet ID
-      0x00,  // Protocol version (varint)
-      0x00,  // String length (varint)
-      0x00,  // Next state (varint, 1 for status)
-    };
-
-    client.write(packet, sizeof(packet));
-
-    // Read response
-    String response = client.readStringUntil('\n');
-    client.stop();
-
-    // Parse JSON response (simplified)
-    int players_online = 0;
-    if (response.indexOf("\"players\":{\"online\":") != -1) {
-      int start = response.indexOf("\"players\":{\"online\":") + 20;
-      int end = response.indexOf(",", start);
-      players_online = response.substring(start, end).toInt();
-    }
-
-    server_status_sensor->publish_state("Online");
-    player_count_sensor->publish_state(players_online);
-    
-    ESP_LOGI("MinecraftServer", "Players online: %d", players_online);
-  }
+  bool query_server();
+  void parse_server_response(const String &response);
 };
+
+}  // namespace minecraft
+}  // namespace esphome
