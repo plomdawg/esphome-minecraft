@@ -1,9 +1,8 @@
 esphome:
   name: minecraft-ore1
   friendly_name: minecraft-ore1
-
-esp8266:
-  board: esp01_1m
+  platform: ESP8266
+  board: d1_mini
 
 # Enable logging
 logger:
@@ -11,7 +10,7 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: !secret encryption_key
+    key: "++yIsgIsGjs/gdIR/7L+FRvxkBiXZMMIbITQwOM0Qds="
 
 ota:
   - platform: esphome
@@ -204,20 +203,16 @@ globals:
 web_server:
   port: 80
   local: true
+  ota: false
   include_internal: false
-
-  pages:
-    - id: root
-      content: !lambda |-
-        auto content = id(custom_html).str();
-        return content;
 
 # Custom components
 external_components:
   - source: 
       url: https://github.com/plomdawg/esphome-minecraft.git
       type: git
-      ref: main
+      ref: dev
+    refresh: 0s
     components: [minecraft_ore_block_config, minecraft_server_checker, minecraft_led_control]
 
 # Configuration component
@@ -228,6 +223,9 @@ minecraft_ore_block_config:
 minecraft_server_checker:
   id: server_checker
   config_id: ore_block_config
+  player_count_id: player_count
+  server_status_id: server_status
+  update_interval: 15s
 
 # LED control component
 minecraft_led_control:
@@ -242,6 +240,9 @@ sensor:
     name: "Server Port"
     id: server_port
     icon: mdi:minecraft
+  - platform: minecraft_server_checker
+    name: "Player Count"
+    id: player_count
 
 text_sensor:
   - platform: template
@@ -253,10 +254,14 @@ text_sensor:
   - platform: template
     name: "Static Color"
     id: static_color
+  - platform: minecraft_server_checker
+    name: "Server Status"
+    id: server_status
 
 # LED Output
 light:
   - platform: neopixelbus
+    variant: WS2811
     type: GRB
     pin: D4
     num_leds: 1

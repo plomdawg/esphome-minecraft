@@ -11,6 +11,7 @@ MinecraftServerChecker = minecraft_server_checker_ns.class_('MinecraftServerChec
 CONF_CONFIG_ID = "config_id"
 CONF_PLAYER_COUNT_ID = "player_count_id"
 CONF_SERVER_STATUS_ID = "server_status_id"
+CONF_MINECRAFT_SERVER_CHECKER_ID = "minecraft_server_checker_id"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(MinecraftServerChecker),

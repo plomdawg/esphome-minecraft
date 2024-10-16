@@ -27,6 +27,9 @@ class MinecraftServerChecker : public PollingComponent {
     }
   }
 
+  void set_player_count_sensor(sensor::Sensor *sens) { player_count_sensor = sens; }
+  //void set_server_status_sensor(text_sensor::TextSensor *sens) { server_status_sensor = sens; }
+
  private:
   MinecraftOreBlockConfig *config_;
 
