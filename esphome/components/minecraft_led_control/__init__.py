@@ -2,7 +2,6 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 from esphome.components import light, sensor
-from . import minecraft_ore_block_config_ns
 
 DEPENDENCIES = ["minecraft_ore_block_config", "light"]
 
@@ -15,7 +14,7 @@ CONF_PLAYER_COUNT_SENSOR_ID = "player_count_sensor_id"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(MinecraftLEDControl),
-    cv.GenerateID(CONF_CONFIG_ID): cv.use_id(minecraft_ore_block_config_ns.MinecraftOreBlockConfig),
+    cv.GenerateID(CONF_CONFIG_ID): cv.use_id(cg.Component),
     cv.GenerateID(CONF_LIGHT_ID): cv.use_id(light.LightState),
     cv.GenerateID(CONF_PLAYER_COUNT_SENSOR_ID): cv.use_id(sensor.Sensor),
 }).extend(cv.COMPONENT_SCHEMA)
