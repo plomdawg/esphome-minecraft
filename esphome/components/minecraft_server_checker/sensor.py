@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
-from esphome.const import CONF_ID, UNIT_EMPTY, ICON_ACCOUNT_GROUP
+from esphome.const import CONF_ID, UNIT_EMPTY
 
 from . import MinecraftServerChecker, CONF_MINECRAFT_SERVER_CHECKER_ID
 
@@ -9,7 +9,6 @@ DEPENDENCIES = ["minecraft_server_checker"]
 
 CONFIG_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_EMPTY,
-    icon=ICON_ACCOUNT_GROUP,
     accuracy_decimals=0,
 ).extend({
     cv.GenerateID(CONF_MINECRAFT_SERVER_CHECKER_ID): cv.use_id(MinecraftServerChecker),
