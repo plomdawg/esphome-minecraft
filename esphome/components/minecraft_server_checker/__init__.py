@@ -1,8 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
-from esphome.components import sensor, text_sensor
-from . import minecraft_ore_block_config_ns
+from esphome.components import sensor, text_sensor, minecraft_ore_block_config
 
 DEPENDENCIES = ["minecraft_ore_block_config"]
 
@@ -15,7 +14,7 @@ CONF_SERVER_STATUS_ID = "server_status_id"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(MinecraftServerChecker),
-    cv.GenerateID(CONF_CONFIG_ID): cv.use_id(minecraft_ore_block_config_ns.MinecraftOreBlockConfig),
+    cv.GenerateID(CONF_CONFIG_ID): cv.use_id(minecraft_ore_block_config.MinecraftOreBlockConfig),
     cv.Optional(CONF_PLAYER_COUNT_ID): cv.use_id(sensor.Sensor),
     cv.Optional(CONF_SERVER_STATUS_ID): cv.use_id(text_sensor.TextSensor),
 }).extend(cv.polling_component_schema('60s'))
