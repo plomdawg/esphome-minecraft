@@ -8,30 +8,31 @@ class MinecraftServerChecker : public PollingComponent {
   Sensor *player_count_sensor = new Sensor();
   TextSensor *server_status_sensor = new TextSensor();
 
+  void set_config(MinecraftOreBlockConfig *config) {
+    config_ = config;
+  }
+
   void setup() override {
     // This will be called by App.setup()
   }
 
   void update() override {
     // This will be called every 15 seconds
-    check_server_status();
-  }
-
-  void set_server_address(const std::string &address) {
-    server_address_ = address;
-  }
-
-  void set_server_port(uint16_t port) {
-    server_port_ = port;
+    if (config_->get_mode() == "auto") {
+      check_server_status();
+    } else {
+      // In static mode, we don't need to check the server
+      server_status_sensor->publish_state("Static Mode");
+      player_count_sensor->publish_state(0);
+    }
   }
 
  private:
-  std::string server_address_ = "localhost";
-  uint16_t server_port_ = 25565;
+  MinecraftOreBlockConfig *config_;
 
   void check_server_status() {
     WiFiClient client;
-    if (!client.connect(server_address_.c_str(), server_port_)) {
+    if (!client.connect(config_->get_server_address().c_str(), config_->get_server_port())) {
       ESP_LOGE("MinecraftServer", "Connection failed");
       server_status_sensor->publish_state("Offline");
       player_count_sensor->publish_state(0);
