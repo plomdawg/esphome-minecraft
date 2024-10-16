@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor, text_sensor
-from esphome.const import CONF_ID, CONF_UPDATE_INTERVAL, UNIT_EMPTY, ICON_ACCOUNT_GROUP, ICON_SERVER_NETWORK
+from esphome.const import CONF_ID, CONF_UPDATE_INTERVAL, UNIT_EMPTY
 
 DEPENDENCIES = ['network']
 AUTO_LOAD = ['sensor', 'text_sensor']
@@ -21,11 +21,9 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Required(CONF_SERVER_PORT): cv.port,
     cv.Optional(CONF_PLAYER_COUNT): sensor.sensor_schema(
         unit_of_measurement=UNIT_EMPTY,
-        icon=ICON_ACCOUNT_GROUP,
         accuracy_decimals=0
     ),
     cv.Optional(CONF_SERVER_STATUS): text_sensor.text_sensor_schema(
-        icon=ICON_SERVER_NETWORK
     ),
 }).extend(cv.COMPONENT_SCHEMA)
 
