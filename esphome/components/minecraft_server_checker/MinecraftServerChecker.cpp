@@ -1,7 +1,7 @@
 #include "MinecraftServerChecker.h"
 #include "esphome/core/log.h"
 #include <ArduinoJson.h>
-
+#include <string>
 namespace esphome {
 namespace minecraft {
 
@@ -85,7 +85,7 @@ void MinecraftServerChecker::parse_server_response(const String &response) {
   }
 
   if (json.containsKey("version") && json["version"].containsKey("name")) {
-    String server_version = json["version"]["name"];
+    std::string server_version = json["version"]["name"].as<std::string>();
     if (this->server_status_sensor_ != nullptr) {
       this->server_status_sensor_->publish_state("Online - " + server_version);
     }
