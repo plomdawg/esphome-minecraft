@@ -1,18 +1,18 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor, text_sensor
-from esphome.const import CONF_ID, CONF_UPDATE_INTERVAL, UNIT_EMPTY
+from esphome.const import CONF_ID, CONF_UPDATE_INTERVAL, UNIT_EMPTY, ICON_ACCOUNT
 
 DEPENDENCIES = ['network']
 AUTO_LOAD = ['sensor', 'text_sensor']
-
-minecraft_ns = cg.esphome_ns.namespace('minecraft')
-MinecraftServerChecker = minecraft_ns.class_('MinecraftServerChecker', cg.Component)
 
 CONF_SERVER_ADDRESS = 'server_address'
 CONF_SERVER_PORT = 'server_port'
 CONF_PLAYER_COUNT = 'player_count'
 CONF_SERVER_STATUS = 'server_status'
+
+minecraft_ns = cg.esphome_ns.namespace('minecraft')
+MinecraftServerChecker = minecraft_ns.class_('MinecraftServerChecker', cg.Component)
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(MinecraftServerChecker),
@@ -21,10 +21,10 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Required(CONF_SERVER_PORT): cv.port,
     cv.Optional(CONF_PLAYER_COUNT): sensor.sensor_schema(
         unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_ACCOUNT,
         accuracy_decimals=0
     ),
-    cv.Optional(CONF_SERVER_STATUS): text_sensor.text_sensor_schema(
-    ),
+    cv.Optional(CONF_SERVER_STATUS): text_sensor.text_sensor_schema(),
 }).extend(cv.COMPONENT_SCHEMA)
 
 async def to_code(config):
