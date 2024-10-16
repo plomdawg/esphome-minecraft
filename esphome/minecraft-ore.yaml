@@ -213,7 +213,7 @@ external_components:
       type: git
       ref: dev
     refresh: 0s
-    components: [minecraft_ore_block_config, minecraft_server_checker, minecraft_led_control]
+    components: [minecraft_ore_block_config, minecraft_server_checker]
 
 # Configuration component
 minecraft_ore_block_config:
@@ -228,11 +228,11 @@ minecraft_server_checker:
   update_interval: 15s
 
 # LED control component
-minecraft_led_control:
-  id: led_control
-  config_id: ore_block_config
-  light_id: ore_block_led
-  player_count_sensor_id: player_count
+#minecraft_led_control:
+#  id: led_control
+#  config_id: ore_block_config
+#  light_id: ore_block_led
+#  player_count_sensor_id: player_count
 
 # Sensors
 sensor:
