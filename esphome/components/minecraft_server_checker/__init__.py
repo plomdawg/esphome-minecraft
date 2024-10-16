@@ -1,3 +1,1 @@
-CONF_MINECRAFT_SERVER_CHECKER_ID = 'minecraft_server_checker_id'
-
 from .minecraft_server_checker import MinecraftServerChecker

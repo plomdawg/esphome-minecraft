@@ -49,27 +49,12 @@ minecraft_server_checker:
   server_status:
     name: "Server Status"
 
-# Sensors
-sensor:
-  - platform: template
-    name: "Server Port"
-    id: server_port
-    icon: mdi:minecraft
-  - platform: minecraft_server_checker
-    name: "Player Count"
-    id: player_count
 
 text_sensor:
-  - platform: template
-    name: "Mode"
-    id: mode
   - platform: template
     name: "Server Address"
     id: server_address
   - platform: template
-    name: "Static Color"
-    id: static_color
-  - platform: minecraft_server_checker
     name: "Server Status"
     id: server_status
 
